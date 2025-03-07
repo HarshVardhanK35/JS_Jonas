@@ -65,9 +65,10 @@ p.style.width = '300px'
  * NOTE:
  * - In AJAX, XML is the data format that is used to transmit data across the softwares .. but now-a-days we have been using JSON format to transmit the data across platforms!
  * 
+ * 
  * ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  * ! 2. Our First AJAX Call: XMLHttpRequest
- * ------------------------------------------
+ * -----------------------------------------
  * 
  * Note: The URLs used are took from a gitHub repository: "/public-apis"
  * ! - make sure that API has CORS (Cross Origin Resource Sharing) set to - 'YES' (or Unknown)
@@ -125,6 +126,7 @@ getCountryData('usa')
  * GETTING ORDERLESS DATA...
  * - we get data in no order, every-time we refresh the page.
  * ? so, if we data in a specific order.. we have to "chain the requests" => that is the concept called "CALLBACK HELL"
+ * 
  * 
  * ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  * ! 3. Welcome to Callback Hell
@@ -225,6 +227,7 @@ setTimeout(() => {
  * ! Problem:
  * - hard to structure the code, so we have promises in the place of "PROMISES"!
  * 
+ * 
  * ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  * ! 4. Promises and the Fetch API
  * --------------------------------
@@ -264,6 +267,217 @@ console.log(req) // it returns a pending state promise when we logged the data h
  * - we can only consume it! when we have already one! here, we get a 'promise' from a "fetch" function
  * 
  * - while using Fetch API, fetch function builds the promise and returns it to consume! 
+ * 
+ * 
+ * ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ * ! 5. Consuming Promises
+ * ------------------------
+const getCountryData = function(country) {
+    fetch(`https://restcountries.com/v2/name/${country}`)
+    .then((res) => {
+        return res.json()
+    })
+    .then(([data]) => {                         // destructuring
+        console.log(data)
+    })
+}
+getCountryData('portugal')
+ * 
+ * - fetch(`url`) returns a new promise, if we may get resolved solution from the promise (if promise may get resolved) =>  we use .then() to consume the promise
+ *
+ *     1                                   2
+ * .then((res) => { return res.json() }).then((data) => { clg(data) })
+ * 
+ * 1) 1st .then() takes cb fn which has a parameter that gets from the resolved promise HERE WE HANDLE THE FULFILLED PROMISE, we get data inside the body which will be in "ReadableStream"
+ *   - hence this has to be converted into JSON, so we use .json() on the response we get from the FULFILLED promise
+ *   - the converted JSON object is also an asynchronous fn hence it has to consumed again, return the JSON object and apply .then() again
+ * 2) 2nd .then() again consumes the promise
+ * 
+ * Note:
+ * - promises do not get rid of callbacks completely but they get rid of nested callbacks or callback hell completely!
+ * 
+ * 
+ * ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ * ! 6. Chaining Promises
+ * -----------------------
+ * - in order to get the neighboring country from a country, we have to chain two AJAX calls at a time .. the 1st country is required to get it's neighboring country
+
+const getCountryData = function(country) {
+    // country
+    fetch(`https://restcountries.com/v2/name/${country}`)
+    .then((res) => {
+        return res.json()
+    })
+    .then(([data]) => {                         // destructuring    
+        renderData(data)
+
+        // neighbor
+        const neighbor = data.borders?.[0]      // optional chaining
+        return fetch(`https://restcountries.com/v2/alpha/${neighbor}`)          // here another promise will be returned => neighbor
+    })
+    .then((res) => {
+        return res.json()
+    })
+    .then((data) => {
+        renderData(data, 'neighbour')
+    })
+}
+getCountryData('sri lanka')
+ * 
+ * - instead of using long callback hells.. we used flat promises chaining here to get the neighbouring country of a country 
+ * 
+ * * Here, we returned a promise from a parent promise and we applied .then() on it!
+ * 
+ * 
+ * ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ * ! 7. Handling Rejected Promises
+ * --------------------------------
+ * - in a promise, if there were no errors then it is resolved successfully.. or if there are any errors, then it is a rejected promise! 
+ * 
+ * How to Handle Promise Rejections?
+ * ---
+ * - there is a chance of getting rejections is that when there is an internet disconnection!
+ * 
+ *                                                                                      cb on success           cb on error(network error!)
+ *                                                                                                  |           |
+ * * 1) error can be caught using second parameter which is also a cb fn that can be passed to .then(() => {}, () => {})
+
+const getCountryData = function(country) {
+    // country
+    fetch(`https://restcountries.com/v2/name/${country}`)
+    .then((res) => {
+        return res.json()
+        }, (err) => {
+//! error handling (network connection problem)
+            alert(err)
+    })
+    .then(([data]) => {                         // destructuring    
+        renderData(data)
+
+        // neighbor
+        const neighbor = data.borders?.[0]
+        return fetch(`https://restcountries.com/v2/alpha/${neighbor}`)          // here another promise will be returned => neighbor
+    })
+}
+btn.addEventListener('click', () => {
+    getCountryData('sri lanka')
+})
+ * 
+ * - here include a button in HTML, which let the user load the page on network and after loading network will be disconnected, and clicks on button to fetch the country details
+ * - if there are chaining of promises, we have to handle the error at each consumption of promise from a fetch request!
+ * 
+ * ! CATCH block
+ * 
+ * * 2) so, we would have to do the error handling globally, at end of the chain is the better decision
+ * 
+const getCountryData = function(country) {
+    // country
+    fetch(`https://restcountries.com/v2/name/${country}`)
+    .then((res) => {
+        return res.json()
+    })
+    .then(([data]) => {                         // destructuring    
+        renderData(data)
+
+        // neighbor
+        const neighbor = data.borders?.[0]
+        return fetch(`https://restcountries.com/v2/alpha/${neighbor}`)          // here another promise will be returned => neighbor
+    })
+//! catching errors !!!
+    .catch((err) => {
+        alert(err)
+    })
+}
+btn.addEventListener('click', () => {
+    getCountryData('sri lanka')
+})
+ * 
+ * -------------------
+.catch((err) => {
+    alert(err.message)
+})
+ * -------------------
+ * - every error which has to be handled inside a catch block, is a real JS object! {!!! we can create own errors in JS with a error constructor !!!}
+ * - so this error object contains a "message" property! 
+ * 
+ * ! FINALLY
+ * - this also take a callback fn, which will be executed whether a promise gets "fulfilled" or "rejected"
+ * 
+ * - finally is useful to render a spinning wheel, to show that asynchronous is still loading in background! (buffering)
+ * - the spinner gets rendered when an asynchronous operation starts, and ends when it is completed! 
+ * 
+ * NOTE:
+ * - if user requested for a country that was not there, then there will be "404 Error: Not Found"
+ * - but here we handled only an error happened when there is network connection, so next we handle a "404 Error"
+ * 
+ * 
+ * ! ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ * ! 8. Throwing Errors Manually
+ * ------------------------------
+ * - during a fetch, there was a 404 Error! (when an API could not find any data with provided details!)
+ * - fetch fn. did not reject the request in this case! so we have to do this process manually!
+ * 
+ * - when there is a 404 Error! in the response object the "ok" property set to 'false' and status is set '404'
+ *   - if there is no error the 'ok' is set to 'true' and status is set to '200'
+ * 
+ * - we can use the "ok" - false to reject the promise manually by creating a new error => defining error message...
+ * -----------------------------
+ * if (response.ok === false) {
+ *  throw new Error()
+ * }
+ * -----------------------------
+ * 
+const getCountryData = function(country) {
+    //? country
+    fetch(`https://restcountries.com/v2/name/${country}`)
+    .then((res) => {
+        //! throwing new error: when there is an error !
+        if(!res.ok){
+            throw new Error(`Country Not Found: ${res.status}`)
+        }
+        //! no error !
+        return res.json()
+    })
+    .then(([data]) => {                         // destructuring    
+        renderData(data)
+
+        //? neighbor
+        const neighbor = data.borders?.[0]
+        return fetch(`https://restcountries.com/v2/alpha/${neighbor}`)          // here another promise will be returned => neighbor
+    })
+    .catch((e) => {
+        console.log(e)
+    })
+    .finally(() => {
+        console.log('Runs Even Promise is Fulfilled or Rejected!')
+    })
+} 
+ * - "throw" immediately terminates the function .. when there is an error! 
+ * - then the promise would immediately be rejected .. then the promise returned will be a rejected promise from this below .then()...
+ * 
+.then((res) => {
+    //! throwing new error: when there is an error !
+    if(!res.ok){
+        throw new Error(`Country Not Found: ${res.status}`)
+    }
+    //! no error !
+    return res.json()
+})
+ * - this rejected promise will be propagated all the way to the ".catch() handler" and then the HTML or any RENDER fn inside catch handler will be fired 
+ * - simply we are creating an error on our own to get handled when promise gets rejected, and gets into .catch() block 
+ * 
+ * What If?
+ * ... there is an error fetching a neighbor country also, so we have include similar error handler while fetching the data of neighbour (which is repetitive and not a DRY principle)
+ * 
+ * HELPER FUNCTION:
+ * - so, we include a HELPER function in which we wrap up the fetch, error handler, and also the conversion to JSON!
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * 
  */

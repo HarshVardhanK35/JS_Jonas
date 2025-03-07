@@ -67,11 +67,57 @@ const getCountryAndNeighbor = function (country) {
 // getCountryAndNeighbor('portugal')
 
 //! AJAX Call
-const request = new XMLHttpRequest()
-request.open('GET', `https://restcountries.com/v2/name/${country}`)
-request.send()
+// const request = new XMLHttpRequest()
+// request.open('GET', `https://restcountries.com/v2/name/${country}`)
+// request.send()
+
+//!
+const getJSON = function(url) {
+    fetch(url)
+    .then((res) => {
+        //! throwing new error: when there is an error !
+        if(!res.ok){
+            throw new Error(`Country Not Found: ${res.status}`)
+        }
+        //! no error !
+        return res.json()
+    }) 
+}
+
 
 //! Fetch API Call
-const req = fetch('https://restcountries.com/v2/name/portugal')
+const getCountryData = function(country) {
+    // country
+    fetch(`https://restcountries.com/v2/name/${country}`)
+    .then((res) => {
+        
+        //! throwing new error: when there is an error !
+        if(!res.ok){
+            throw new Error(`Country Not Found: ${res.status}`)
+        }
+        //! no error !
+        return res.json()
+    })
+    .then(([data]) => {                         // destructuring    
+        renderData(data)
 
-console.log(req) // it returns a pending state promise when we logged the data here 
+        // neighbor
+        const neighbor = data.borders?.[0]
+        return fetch(`https://restcountries.com/v2/alpha/${neighbor}`)          // here another promise will be returned => neighbor
+    })
+    .then((res) => {
+        return res.json()
+    })
+    .then((data) => {
+        renderData(data, 'neighbour')
+    })
+    .catch((e) => {
+        console.log(e)
+    })
+    .finally(() => {
+        console.log('Runs Even Promise is Fulfilled or Rejected!')
+    })
+}
+btn.addEventListener('click', () => {
+    getCountryData('sri lanka')
+})
