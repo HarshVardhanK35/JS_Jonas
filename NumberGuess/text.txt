@@ -1,0 +1,94 @@
+part-1
+--------------------------------------------------------------------------------------------------------
+what is DOM manipulation?
+---
+
+- DOM Doc Object Model. Structured representation of HTML Doc
+- DOM allows us to access HTML elements with JS with which we can manipulate and style them accordingly
+- we use terms: parent child and sibling element while representing the DOM tree.
+  - these are nodes and we can access them using JS
+- in order to access every element we use DOCUMENT, which serves as an entry point into HTML elements
+  ex: document.querySelector()
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+    <title>Guess My Number!</title>
+  </head>
+  <body>
+    <p>this is a text</p>
+  </body>
+</html>
+
+- in the above example, we have HTML as root element under the DOCUMENT - <!DOCTYPE html> and inside HTML there are
+  head and body which are on same level so they are called "siblings"
+- HTML is "parent" node/element whereas head and body are "child" nodes/elements
+- inside body element we have text "this is a text" which is also considered as child node.
+         body
+          |
+        p - tag
+          |
+  text - this is a text
+
+
+Note:
+- DOM, DOM methods and properties are not a part of JS and they are part of "WEB APIs"
+
+
+part-2
+--------------------------------------------------------------------------------------------------------
+
+- to select elements we use... querySelector() inside this method we pass the "class" or "id" that respective element has
+
+  ex: <p class="message">Start guessing...</p>
+- selection: document.querySelector('.message')
+- manipulation: document.querySelector('.message').textContent = "Correct Guess Wins Higher Points!"
+
+- for selecting input and we same "querySelector()" but with class of the input element
+  - and to access the value we use ".value" on the selected element
+
+  ex: <input type="number" class="guess" />
+- selection: document.querySelector('.number').value       // to read the value that input holds in it!
+- manipulation: document.querySelector('.number').value = 23
+
+
+- part - 3: handling click events
+--------------------------------------------------------------------------------------------------------
+'addEventListener'
+- in a doc, we have to add an event through 'addEventListener' on any button inside an HTML
+
+addEventListener:
+- takes 1st argv: "type of the event we have to listen on the button"
+        2nd argv: "event handler" - basically a fn on after listening to the event, fn executes
+
+ex:
+  <input type="number" class="guess" />
+  <button class="btn check">Check!</button>
+
+document.querySelector('.check')      // select the button
+        .addEventListener('click',      // 1st: add an event on which the following fn shall execute
+        () => {
+          clg(document.querySelector(".guess").value)       // 2nd: set a fn as a value, which will execute after the event listened
+        })
+
+event handler:
+  - we just passed function to the event but not called it! the fn will be called after the 'click' event has done
+
+
+NOTE:
+1. IF THE APPLICATION DOES TAKE AN USER-INPUT
+    1st ASSUMPTION: THERE WAS NO INPUT, CHECK IF THERE IS INPUT OR NOT
+
+
+- part - 4: Implementing Logic
+- part - 5: manipulating CSS (styles)
+--------------------------------------------------------------------------------------------------------
+
+document.querySelector('body').style.backgroundColor = '#60b347'
+
+- the above code works for entire 'body' element and use 'camelCase' for 'backgroundColor' but in CSS we instead used
+    'background-color' and assign a value for the green color appearance in a 'STRING'.
+- whenever we are manipulating the styles / css of a page mention it in a 'STRING'
+        as '#60b347' not as -- #60b347
+- this will modify at in-line (in-line styling!)

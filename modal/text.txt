@@ -1,0 +1,40 @@
+NodeList:
+---
+- if there is one element with a class we can use "querySelector"
+  - but if there are more than one element with same class.. we have to use "querySelectorAll"
+
+- let's take an example of Modal Window to show how adding and removing of classes works
+ex:
+  <button class="show-modal">Show modal 1</button>
+  <button class="show-modal">Show modal 2</button>
+  <button class="show-modal">Show modal 3</button>
+
+- document.querySelectorAll('.show-modal')... which gives a "NodeList"
+  - NodeList is an 'array' type and consists of all arrays of elements
+
+- so whenever we want to add/remove a class to an element.. we use {modal.classList.remove('hidden')}
+
+  ex: <div class="modal hidden">
+    - in order to remove a class from the above example we use
+      - document.querySelector('.modal').classList.remove('hidden')
+
+  ---same for adding--- document.querySelector('.modal').classList.add('hidden')
+
+Note:
+  - whenever we add a class to the classList we shall not put the (.) dot before the class we are adding to the element
+  - same goes when adding a class to the element using DOM manipulation
+
+--------------------------------------------------------------------------------------------------------------
+
+keyboard events
+--- How to handle key press events
+
+- taking the above modal as an example, we can also close the modal using 'escape (esc)' key
+   - so how to respond for keyboard events
+- keyboard events are GLOBAL events.. that means we listen on whole document
+
+- there are three types of events on keyboard.. they are
+    1. key-down       - fired when press down a key
+    2. key-up         - happens when we lift finger from a key
+    3. key-press      - fired continuously, when we keep our finger on a certain key
+

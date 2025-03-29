@@ -1,0 +1,83 @@
+How JS works Behind The Scenes
+----------------------------------------------------------------------------------
+- JS high-level, prototype-based, object-oriented, multi-paradigm, interpreted or just-in-time compiled
+  dynamic single threaded, garbage-collected programming language
+- language with 1st class functions and non-blocking - event-loop, concurrency model
+
+
+HIGH-LEVEL:
+---
+  - to run a program in a computer, needs some hardware resources such as memory and CPU
+    - there are low-level languages like c:
+      C language.. where devs need to manage the resources (like asking computer for memory to create a new variable)
+    - for High-level languages does not require manual resource management, cause these languages have abstractions
+
+  Note:
+  - high-level languages are not as fast and optimized as compared to low-level languages
+  - in high-level language the tool that helps to manage the resources is "garbage collection"
+
+
+GARBAGE COLLECTION:
+---
+  - algorithm inside JS engine, which automatically removes all un-used objects from computer memory, in-order not to clog
+
+
+INTERPRETED or JUST-IN-TIME COMPILED:
+---
+  - as computer understands only 'zeroes' and 'ones' which is "machine code" but we write in human-readable JS code
+    that has to be translated into machine code
+
+
+MULTI-PARADIGM:
+---
+  - approach to structure the code.
+    - there are three types of paradigms: procedural, functional and object-oriented
+
+  - JS has all three types of paradigms.. which is flexible and versatile
+
+
+PROTOTYPE-BASED OBJECT-ORIENTED:
+---
+  - everything in JS is treated as an Object (except primitive values).
+    - ex: array is an object and we can use .push() method on it. cause of prototypal inheritance.
+
+  - we create arrays from an array blueprint like a template which is a prototype
+    - and it consists all the necessary array methods
+      - arrays we create in code, inherit methods from the blueprint.
+
+
+FIRST-CLASS FUNCTIONS:
+---
+  - fns are treated as variables. we can simply pass them into other fns and return fns from fns
+    ex:
+    const hideModal = () => {
+      modal.classList.add('hidden')
+      overlay.classList.add('hidden')
+    }
+    closeModal.addEventListener('click', hideModal)
+    overlay.addEventListener('click', hideModal)
+
+
+DYNAMIC:
+---
+  - JS is dynamically typed language. as we do not assign data types to variables
+    - the type can only be known after executing
+  ex:
+    let x = 9
+    x = "Jonas"
+
+  - for strongly typed language.. we shall have to use "TYPESCRIPT"
+
+
+SINGLE-THREADED NON-BLOCKING EVENT LOOP:                          // thread: set of instructions that is executed
+---
+  - CONCURRENCY: how JS engine handles multiple tasks happening at the same time
+
+    - but JS runs in one 'single thread' that is it can do one thing at a time
+
+  single threading.. ex: the further code execution stops while fetching data from the server
+
+    - so we have non-blocking event loop..
+      - takes the long-running tasks.. executes them in the BackGround and adds to the main thread once finished.
+
+this is all about.. JS non-blocking event loop concurrency model with a single thread.
